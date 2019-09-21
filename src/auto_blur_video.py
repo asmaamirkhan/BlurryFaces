@@ -142,10 +142,10 @@ def main(args):
         cv.imshow('blurred', frame)
 
     # if image will be saved then save it
-    if args.output_video:
-        output.write(frame)
-        print('Blurred video has been saved successfully at',
-              args.output_video, 'path')
+        if args.output_video:
+            output.write(frame)
+            print('Blurred video has been saved successfully at',
+                args.output_video, 'path')
 
     # when any key has been pressed then close window and stop the program
 
