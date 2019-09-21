@@ -77,16 +77,16 @@ def blurBoxes(image, boxes):
     
     for box in boxes:
         # unpack each box
-        x,y,w,h = [d for d in box]
+        x1,y1,x2,y2 = [d for d in box]
         
         # crop the image due to the current box
-        sub = image[y:y+h, x:x+w]
+        sub = image[y1:y2, x1:x2]
         
         # apply GaussianBlur on cropped area
         blur = cv.GaussianBlur(sub, (23,23), 30)
         
         # paste blurred image on the original image
-        image[y:y+h, x:x+w] = blur
+        image[y1:y2, x1:x2] = blur
         
     return image
 
@@ -106,16 +106,16 @@ def main(args):
     print(scores)
     print(classes)
     for i,box in enumerate(boxes):
-        if scores[i] > 0.5:
             print(box)
             x1,y1,x2,y2 = [d for d in box]
-            cv.rectangle(image, (x1, y1), (x2,y2), (255, 0, 0), 1)
 
+    # apply blurring
+    image = blurBoxes(image, boxes)
+    
     print(image.shape)
     cv.imshow('blurred',image)
-    # apply blurring
-    #image = blurBoxes(image, ROIs)
     
+
     # if image will be saved then save it
     if args.output_image:
         cv.imwrite(args.output_image,image)
