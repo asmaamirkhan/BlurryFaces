@@ -107,18 +107,22 @@ def main(args):
     # open video
     capture = cv.VideoCapture(args.input_video)
 
+    #print(capture.get(3), capture.get(4), capture.get(5) )
+
     if args.output_video:
         fourcc = cv.VideoWriter_fourcc(*'mp4v')
-        output = cv.VideoWriter(
-                args.output_video, fourcc, 20.0,(700,700))
+        output = cv.VideoWriter(args.output_video, fourcc, 20.0, (int(capture.get(3)), int(capture.get(4))))
 
     frame_counter = 0
     while True:
+        # read frame by frame
         r, frame = capture.read()
         frame_counter += 1
+
+        # the end of the video?
         if frame is None:
             break
-        frame = cv.resize(frame, (700, 700))
+        #frame = cv.resize(frame, (700, 700))
         key = cv.waitKey(1)
         if key & 0xFF == ord('q'):
             break
@@ -138,11 +142,11 @@ def main(args):
     # if image will be saved then save it
     if args.output_video:
         output.write(frame)
-        print('Blurred video has been saved successfully at', args.output_video,
-              'path')
+        print('Blurred video has been saved successfully at',
+              args.output_video, 'path')
 
     # when any key has been pressed then close window and stop the program
-    
+
     cv.destroyAllWindows()
 
 
