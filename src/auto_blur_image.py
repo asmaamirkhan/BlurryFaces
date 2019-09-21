@@ -69,7 +69,7 @@ def blurBoxes(image, boxes):
     """
     Argument:
     image -- the image that will be edited as a matrix
-    boxes -- list of boxes that will be blurred, each box must be int the format (x_top_left, y_top_left, width, height)
+    boxes -- list of boxes that will be blurred, each box must be int the format (x_top_left, y_top_left, x_bottom_right, y_bottom_right)
     
     Returns:
     image -- the blurred image as a matrix
@@ -83,7 +83,7 @@ def blurBoxes(image, boxes):
         sub = image[y1:y2, x1:x2]
         
         # apply GaussianBlur on cropped area
-        blur = cv.GaussianBlur(sub, (23,23), 30)
+        blur = cv.blur(sub, (25,25))
         
         # paste blurred image on the original image
         image[y1:y2, x1:x2] = blur
@@ -92,34 +92,37 @@ def blurBoxes(image, boxes):
 
 
 def main(args):
+    # assign model path and threshold
     model_path = args.model_path
-    odapi = DetectorAPI(path_to_ckpt=model_path)
-    threshold = 0.7
+    threshold = args.threshold
 
+    # create detection object
+    odapi = DetectorAPI(path_to_ckpt=model_path)
+        
+    # open image
     image = cv.imread(args.input_image)
+    
+    # real face detection
     boxes, scores, classes, num = odapi.processFrame(image)
-    boxes = boxes[0:num]
-    boxes = [list(b) for b in boxes]
+    
+    # filter boxes due to threshold
+    # boxes are in (x_top_left, y_top_left, x_bottom_right, y_bottom_right) format
     boxes = [boxes[i] for i in range(0, num) if scores[i] > threshold]
     
-    print(boxes)
-    print(scores)
-    print(classes)
-    for i,box in enumerate(boxes):
-            print(box)
-            x1,y1,x2,y2 = [d for d in box]
-
     # apply blurring
     image = blurBoxes(image, boxes)
     
-    print(image.shape)
+    # show image 
     cv.imshow('blurred',image)
     
 
     # if image will be saved then save it
     if args.output_image:
         cv.imwrite(args.output_image,image)
+        print('Image has been saved at', args.output_image, ' path')
     cv.imshow('blurred',image)
+
+    # when any key has been pressed then close window and stop the program
     cv.waitKey(0)
     cv.destroyAllWindows()
     
@@ -136,8 +139,10 @@ if __name__ == "__main__":
                         help='Path to .pb model', type=str, required=True)
     parser.add_argument('-o', '--output_image',
                         help='Output file path', type=str)
+    parser.add_argument('-t', '--threshold',
+                        help='Face detection confidence', default=0.7, type=float)
     args = parser.parse_args()
-    
+    print(args)
     # if input image path is invalid then stop
     assert os.path.isfile(args.input_image), 'Invalid input file'
     
