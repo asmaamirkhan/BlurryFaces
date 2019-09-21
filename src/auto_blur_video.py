@@ -107,7 +107,9 @@ def main(args):
     # open video
     capture = cv.VideoCapture(args.input_video)
 
-    #print(capture.get(3), capture.get(4), capture.get(5) )
+    # video width = capture.get(3)
+    # video height = capture.get(4)
+    # video fps = capture.get(5)
 
     if args.output_video:
         fourcc = cv.VideoWriter_fourcc(*'mp4v')
@@ -122,7 +124,7 @@ def main(args):
         # the end of the video?
         if frame is None:
             break
-        #frame = cv.resize(frame, (700, 700))
+
         key = cv.waitKey(1)
         if key & 0xFF == ord('q'):
             break
