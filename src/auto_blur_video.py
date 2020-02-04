@@ -14,14 +14,14 @@ class DetectorAPI:
 
         self.detection_graph = tf.Graph()
         with self.detection_graph.as_default():
-            od_graph_def = tf.GraphDef()
-            with tf.gfile.GFile(self.path_to_ckpt, 'rb') as fid:
+            od_graph_def = tf.compat.v1.GraphDef()
+            with tf.io.gfile.GFile(self.path_to_ckpt, 'rb') as fid:
                 serialized_graph = fid.read()
                 od_graph_def.ParseFromString(serialized_graph)
                 tf.import_graph_def(od_graph_def, name='')
 
         self.default_graph = self.detection_graph.as_default()
-        self.sess = tf.Session(graph=self.detection_graph)
+        self.sess = tf.compat.v1.Session(graph=self.detection_graph)
 
         # Definite input and output Tensors for detection_graph
         self.image_tensor = self.detection_graph.get_tensor_by_name(
