@@ -14,15 +14,15 @@ A tool to blur faces or other regions in photos and videos 🕵️‍
 
 #### For `auto_blur_image.py`:
 3. Run:
-   `python auto_blur_image.py --input_image C:\path\to\your\image.jpg --output_image C:\path\to\save\output.jpg  --model_path C:\path\to\your\model.pb --threshold 0.7`
+   `python auto_blur_image.py --input_image \path\to\your\image.jpg --output_image \path\to\save\output.jpg  --model_path \path\to\your\model.pb --threshold 0.7`
 
 #### For `auto_blur_video.py`:
 3. Run:
-   `python auto_blur_video.py --input_video C:\path\to\your\video.mp4 --output_video C:\path\to\save\output.mp4 --model_path C:\path\to\your\model.pb --threshold 0.7`
+   `python auto_blur_video.py --input_video \path\to\your\video.mp4 --output_video \path\to\save\output.mp4 --model_path \path\to\your\model.pb --threshold 0.7`
 
 #### For `manual_blur_image.py`:
 3. Run:
-   `python manual_blur_image.py --input_image C:\path\to\your\image.jpg --output_image C:\path\to\save\output.jpg`
+   `python manual_blur_image.py --input_image \path\to\your\image.jpg --output_image \path\to\save\output.jpg`
     * Select your ROI (Region of Interest)
     * Press <kbd>Enter</kbd>
     * Press <kbd>Q</kbd> to finish **or** any key to select another ROI
@@ -48,9 +48,9 @@ A tool to blur faces or other regions in photos and videos 🕵️‍
 ![](./outputs/manual_blur_image.gif)
 
 ## 📍 Note
-I am using face detection model in [face_model](./face_model) folder that can detects faces but codes are valid for every .pb object detection model
+I am using face detection model in [face_model](./face_model) folder that can detects faces but codes are valid for any `.pb` object detection model.
 
-## 🐾 References 
+## 📖 References 
 * [Face Detection Model](https://github.com/yeephycho/tensorflow-face-detection)
 * [Original Video of Imitation Game Trailer](https://www.youtube.com/watch?v=j2jRs4EAvWM)
 
