@@ -6,31 +6,42 @@ A tool to blur faces or other regions in photos and videos 🕵️‍
 2. [auto_blur_video](./src/auto_blur_video.py): Detects and blurs faces _(or objects)_ in a given video due to a Tensorflow model
 3. [manual_blur_image](./src/manual_blur_image.py): Blurs manually selected faces _(or objects)_
 
-> Make sure that you have OpenCV and Tensorflow already installed
 
 ## 🔧🔩 Usage 
 1. Clone or download this repo
 2. Open [src](/src) folder in CMD
+3. Install required packages
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 #### For `auto_blur_image.py`:
-3. Run:
-   `python auto_blur_image.py --input_image \path\to\your\image.jpg --output_image \path\to\save\output.jpg  --model_path \path\to\your\model.pb --threshold 0.7`
+4. Run:
+   ```bash
+   python auto_blur_image.py --input_image <PATH_TO_INPUT_JPG_FILE> --output_image <PATH_TO_OUTPUT_JPG_FILE>  --model_path <PATH_TO_INPUT_PB_FILE> --threshold <THRESHOLD>
+   ```
 
 #### For `auto_blur_video.py`:
-3. Run:
-   `python auto_blur_video.py --input_video \path\to\your\video.mp4 --output_video \path\to\save\output.mp4 --model_path \path\to\your\model.pb --threshold 0.7`
+4. Run:
+   ```bash
+   python auto_blur_video.py --input_video <PATH_TO_INPUT_MP4_FILE> --output_video <PATH_TO_OUTPUT_MP4_FILE> --model_path  <PATH_TO_INPUT_PB_FILE>  --threshold <THRESHOLD>
+   ```
 
 #### For `manual_blur_image.py`:
-3. Run:
-   `python manual_blur_image.py --input_image \path\to\your\image.jpg --output_image \path\to\save\output.jpg`
+4. Run:
+   ```bash
+   python manual_blur_image.py --input_image <PATH_TO_INPUT_JPG_FILE> --output_image <PATH_TO_OUTPUT_JPG_FILE>
+   ```
     * Select your ROI (Region of Interest)
     * Press <kbd>Enter</kbd>
     * Press <kbd>Q</kbd> to finish **or** any key to select another ROI
 
-4. To see running options run _for all codes_:
-   `python manual_blur_image.py --help`
+5. To see running options run _for all codes_:
+   ```bash
+   python manual_blur_image.py --help
+   ```
 
-5. TADAA 🎉 It's done 🤗
+6. TADAA 🎉 It's done 🤗
 
 ## 🤗 Examples
 
@@ -53,6 +64,9 @@ I am using face detection model in [face_model](./face_model) folder that can de
 ## 📖 References 
 * [Face Detection Model](https://github.com/yeephycho/tensorflow-face-detection)
 * [Original Video of Imitation Game Trailer](https://www.youtube.com/watch?v=j2jRs4EAvWM)
+
+## 🦸‍♀️ Project's Core Codes
+- [📍 TensorFlow Object Detection:](https://github.com/asmaamirkhan/TFObjectDetection) check out this repo in case that you want to use the core code for other purpose 
 
 ## 💼 Contact
 Find me on [LinkedIn](https://www.linkedin.com/in/asmaamirkhan/) and feel free to mail me, [Asmaa 🦋](mailto:asmaamirkhan.am@gmail.com)
