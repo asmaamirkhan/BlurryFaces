@@ -2,28 +2,30 @@
 
 import os
 import argparse
-import cv2 as cv
-from DetectorAPI import DetectorAPI
+import cv2
+from DetectorAPI import Detector
+
 
 def blurBoxes(image, boxes):
     """
     Argument:
     image -- the image that will be edited as a matrix
-    boxes -- list of boxes that will be blurred, each box must be int the format (x_top_left, y_top_left, x_bottom_right, y_bottom_right)
-    
+    boxes -- list of boxes that will be blurred each element must be a dictionary that has [id, score, x1, y1, x2, y2] keys
+
     Returns:
     image -- the blurred image as a matrix
     """
 
     for box in boxes:
         # unpack each box
-        x1, y1, x2, y2 = [d for d in box]
+        x1, y1 = box["x1"], box["y1"]
+        x2, y2 = box["x2"], box["y2"]
 
         # crop the image due to the current box
         sub = image[y1:y2, x1:x2]
 
         # apply GaussianBlur on cropped area
-        blur = cv.blur(sub, (25, 25))
+        blur = cv2.blur(sub, (25, 25))
 
         # paste blurred image on the original image
         image[y1:y2, x1:x2] = blur
@@ -37,34 +39,30 @@ def main(args):
     threshold = args.threshold
 
     # create detection object
-    odapi = DetectorAPI(path_to_ckpt=model_path)
+    detector = Detector(model_path=model_path, name="detection")
 
     # open image
-    image = cv.imread(args.input_image)
+    image = cv2.imread(args.input_image)
 
     # real face detection
-    boxes, scores, classes, num = odapi.processFrame(image)
-
-    # filter boxes due to threshold
-    # boxes are in (x_top_left, y_top_left, x_bottom_right, y_bottom_right) format
-    boxes = [boxes[i] for i in range(0, num) if scores[i] > threshold]
+    faces = detector.detect_objects(image, threshold=threshold)
 
     # apply blurring
-    image = blurBoxes(image, boxes)
+    image = blurBoxes(image, faces)
 
     # show image
-    cv.imshow('blurred', image)
+    cv2.imshow('blurred', image)
 
     # if image will be saved then save it
     if args.output_image:
-        cv.imwrite(args.output_image, image)
+        cv2.imwrite(args.output_image, image)
         print('Image has been saved successfully at', args.output_image,
               'path')
-    cv.imshow('blurred', image)
+    cv2.imshow('blurred', image)
 
     # when any key has been pressed then close window and stop the program
-    cv.waitKey(0)
-    cv.destroyAllWindows()
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":

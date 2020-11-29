@@ -2,14 +2,15 @@
 
 import os
 import argparse
-import cv2 as cv
-from DetectorAPI import DetectorAPI
+import cv2
+from DetectorAPI import Detector
+
 
 def blurBoxes(image, boxes):
     """
     Argument:
     image -- the image that will be edited as a matrix
-    boxes -- list of boxes that will be blurred, each box must be int the format (x_top_left, y_top_left, x_bottom_right, y_bottom_right)
+    boxes -- list of boxes that will be blurred each element must be a dictionary that has [id, score, x1, y1, x2, y2] keys
 
     Returns:
     image -- the blurred image as a matrix
@@ -17,13 +18,14 @@ def blurBoxes(image, boxes):
 
     for box in boxes:
         # unpack each box
-        x1, y1, x2, y2 = [d for d in box]
+        x1, y1 = box["x1"], box["y1"]
+        x2, y2 = box["x2"], box["y2"]
 
         # crop the image due to the current box
         sub = image[y1:y2, x1:x2]
 
         # apply GaussianBlur on cropped area
-        blur = cv.blur(sub, (25, 25))
+        blur = cv2.blur(sub, (25, 25))
 
         # paste blurred image on the original image
         image[y1:y2, x1:x2] = blur
@@ -37,45 +39,41 @@ def main(args):
     threshold = args.threshold
 
     # create detection object
-    odapi = DetectorAPI(path_to_ckpt=model_path)
+    detector = Detector(model_path=model_path, name="detection")
 
     # open video
-    capture = cv.VideoCapture(args.input_video)
+    capture = cv2.VideoCapture(args.input_video)
 
     # video width = capture.get(3)
     # video height = capture.get(4)
     # video fps = capture.get(5)
 
     if args.output_video:
-        fourcc = cv.VideoWriter_fourcc(*'mp4v')
-        output = cv.VideoWriter(args.output_video, fourcc,
-                                20.0, (int(capture.get(3)), int(capture.get(4))))
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        output = cv2.VideoWriter(args.output_video, fourcc,
+                                 20.0, (int(capture.get(3)), int(capture.get(4))))
 
     frame_counter = 0
     while True:
         # read frame by frame
-        r, frame = capture.read()
+        _, frame = capture.read()
         frame_counter += 1
 
         # the end of the video?
         if frame is None:
             break
 
-        key = cv.waitKey(1)
+        key = cv2.waitKey(1)
         if key & 0xFF == ord('q'):
             break
         # real face detection
-        boxes, scores, classes, num = odapi.processFrame(frame)
-
-        # filter boxes due to threshold
-        # boxes are in (x_top_left, y_top_left, x_bottom_right, y_bottom_right) format
-        boxes = [boxes[i] for i in range(0, num) if scores[i] > threshold]
+        faces = detector.detect_objects(frame, threshold=threshold)
 
         # apply blurring
-        frame = blurBoxes(frame, boxes)
+        frame = blurBoxes(frame, faces)
 
         # show image
-        cv.imshow('blurred', frame)
+        cv2.imshow('blurred', frame)
 
     # if image will be saved then save it
         if args.output_video:
@@ -85,7 +83,7 @@ def main(args):
 
     # when any key has been pressed then close window and stop the program
 
-    cv.destroyAllWindows()
+    cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
@@ -113,7 +111,7 @@ if __name__ == "__main__":
                         default=0.7,
                         type=float)
     args = parser.parse_args()
-    print(args)
+
     # if input image path is invalid then stop
     assert os.path.isfile(args.input_video), 'Invalid input file'
 
