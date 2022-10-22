@@ -6,7 +6,7 @@ import cv2
 from DetectorAPI import Detector
 
 
-def blurBoxes(image, boxes):
+def blurBoxes(image, boxes, blur_strength, extend_selection):
     """
     Argument:
     image -- the image that will be edited as a matrix
@@ -21,11 +21,18 @@ def blurBoxes(image, boxes):
         x1, y1 = box["x1"], box["y1"]
         x2, y2 = box["x2"], box["y2"]
 
+        height, width, _ = image.shape
+
+        x1 = max(0, x1 - extend_selection)
+        x2 = min(width, x2 + extend_selection)
+        y1 = max(0, y1 - extend_selection)
+        y2 = min(height, y2 + extend_selection)
+
         # crop the image due to the current box
         sub = image[y1:y2, x1:x2]
 
         # apply GaussianBlur on cropped area
-        blur = cv2.blur(sub, (25, 25))
+        blur = cv2.blur(sub, (blur_strength, blur_strength))
 
         # paste blurred image on the original image
         image[y1:y2, x1:x2] = blur
@@ -37,6 +44,8 @@ def main(args):
     # assign model path and threshold
     model_path = args.model_path
     threshold = args.threshold
+    blur_strength = args.blur_strength
+    extend_selection = args.extend_selection
 
     # create detection object
     detector = Detector(model_path=model_path, name="detection")
@@ -48,7 +57,7 @@ def main(args):
     faces = detector.detect_objects(image, threshold=threshold)
 
     # apply blurring
-    image = blurBoxes(image, faces)
+    image = blurBoxes(image, faces, blur_strength, extend_selection)
 
     # show image
     cv2.imshow('blurred', image)
@@ -89,6 +98,16 @@ if __name__ == "__main__":
                         help='Face detection confidence',
                         default=0.7,
                         type=float)
+    parser.add_argument('-s',
+                        '--blur_strength',
+                        help='Blur strength, default 25',
+                        default=25,
+                        type=int)
+    parser.add_argument('-e',
+                        '--extend_selection',
+                        help='Extend the selected area by x amount of pixels',
+                        default=0,
+                        type=int)
     args = parser.parse_args()
     print(args)
     # if input image path is invalid then stop
